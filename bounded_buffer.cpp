@@ -22,6 +22,35 @@ int buffer_size;
 int num_producers;
 int num_consumers;
 
+volatile int counter = 0;
+pthread_mutex_t myMutex;
+int argc, char *argv[]
+void *mutex_testing(void *param)
+{
+        int i;
+        for(i = 0; i < 5; i++) {
+                pthread_mutex_lock(&myMutex;);
+                counter++;
+                printf("thread %d counter = %d\n", (int)param,  counter);
+                pthread_mutex_unlock(&myMutex;);
+        }
+}
+
+int main()
+{
+        int one = 1, two = 2, three = 3;
+        pthread_t thread1, thread2, thread3;
+        pthread_mutex_init(&myMutex;,0);
+        pthread_create(&thread1;, 0, mutex_testing, (void*)one);
+        pthread_create(&thread2;, 0, mutex_testing, (void*)two);
+        pthread_create(&thread3;, 0, mutex_testing, (void*)three);
+        pthread_join(thread1, 0);
+        pthread_join(thread2, 0);
+        pthread_join(thread3, 0);
+        pthread_mutex_destroy(&myMutex;);
+        return 0;
+}
+
 // TODO: Declare the semaphores that you will need to implement this algorithm
 //       Semaphores are of type sem_t
 
@@ -47,8 +76,17 @@ void * producer(void * arg)
     // Set my unique thread number, to be used in the output statements below.
     int myNum = producer_num.fetch_add(1) + 1;
  
-    while(true) {
-
+    while(true) 
+    {
+        void
+inc(std::atomic<int>& a)
+{
+  while (true) {
+    a = a + 1;
+    printf("value %d\n", a.load());
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  }
+}
         // TODO: Sleep for a random amount of time between 1 and 5 seconds
         //       Make sure to save the amount of time that was slept, so it can 
         //       be printed out below.
@@ -56,6 +94,23 @@ void * producer(void * arg)
 
 
         int item;
+        
+        {
+  std::atomic<int> a(0);
+  std::thread t1(inc, std::ref(a));
+  std::thread t2(inc, std::ref(a));
+  std::thread t3(inc, std::ref(a));
+  std::thread t4(inc, std::ref(a));
+  std::thread t5(inc, std::ref(a));
+  std::thread t6(inc, std::ref(a));
+
+  t1.join();
+  t2.join();
+  t3.join();
+  t4.join();
+  t5.join();
+  t6.join();
+  return 0;
 
         // TODO: "Produce" an item by generating a random number between 1 and 100 and 
         //       assigning it to "item"
@@ -83,6 +138,10 @@ void * consumer(void * arg)
     int myNum = consumer_num.fetch_add(1) + 1;
     
     while(true) {
+         a = a + 1;
+    printf("value %d\n", a.load());
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
 
         // TODO: Sleep for a random amount of time between 1 and 5 seconds
         //       Make sure to save the amount of time that was slept, so it can 
@@ -91,6 +150,22 @@ void * consumer(void * arg)
         
         // The item that will be consumed
         int item;
+     {
+  std::atomic<int> a(0);
+  std::thread t1(inc, std::ref(a));
+  std::thread t2(inc, std::ref(a));
+  std::thread t3(inc, std::ref(a));
+  std::thread t4(inc, std::ref(a));
+  std::thread t5(inc, std::ref(a));
+  std::thread t6(inc, std::ref(a));
+
+  t1.join();
+  t2.join();
+  t3.join();
+  t4.join();
+  t5.join();
+  t6.join();
+  return 0;
         
         // TODO: "Consume" an item by retrieving the next item from the buffer.
 
@@ -115,6 +190,19 @@ void * consumer(void * arg)
 
 int main(int argc, char ** argv)
 {
+    pthread_mutex_init(&mutex;, 0);
+    pthread_cond_init(&cond;, 0);
+
+    pthread_t pThread, cThread;
+    pthread_create(&pThread;, 0, producer, 0);
+    pthread_create(&cThread;, 0, consumer, 0);
+    pthread_join(pThread, NULL);
+    pthread_join(cThread, NULL);
+
+    pthread_mutex_destroy(&mutex;);
+    pthread_cond_destroy(&cond;);
+    return 0;
+}
     // Usage: bounded_buffer <run_time> <buffer_size> <num_producers> <num_consumers>
 
 
